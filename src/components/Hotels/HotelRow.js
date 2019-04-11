@@ -1,6 +1,5 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import FallbackHotelImage from '../../public/images/photo-error.png';
 import ImageContainer from '../App/ImageContainer';
 import CommonString from '../../common/CommonString';
 
@@ -8,7 +7,7 @@ const HotelRow = ({ data }) => (
   <div className="hotel-list-element">
     <ImageContainer
       imageURL={data.hotelStaticContent.mainImage.url}
-      fallbackImage={FallbackHotelImage}
+      fallbackImage={require('../../public/images/photo-error.png')}
       alt="Hotel available to stay at"
     />
     <div className="label-container">
