@@ -1,4 +1,6 @@
 import React, { Component } from 'react';
+import fetch from 'isomorphic-fetch';
+
 import './style.less';
 import SearchInput from '../UserControls/SearchInput';
 import HotelsContainer from '../Hotels/HotelsContainer';
