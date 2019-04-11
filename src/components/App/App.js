@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import './style.less';
-import HotelRow from '../Hotels/HotelRow';
+import SearchInput from '../UserControls/SearchInput';
 import HotelsContainer from '../Hotels/HotelsContainer';
 
 const RATES_ROUTE_URI =
@@ -10,9 +10,7 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      isLoaded: false,
       hotels: [],
-      isError: false,
       hotelNameFilter: '',
       ascendingSort: false
     };
@@ -22,74 +20,57 @@ class App extends Component {
     this.getRatesHandler();
   }
 
-  getRatesHandler = () =>
-    this.getRates()
-      .then(() => {})
-      .catch(() => this.getRates());
+  getRatesHandler = () => this.getRates().catch(() => this.getRates());
 
   getRates = () =>
     fetch(RATES_ROUTE_URI)
       .then(response => {
         if (response.status !== 200) {
           throw Error();
-          return;
         }
         return response.json();
       })
       .then(jsonResponse => {
         this.setState({
-          hotels: jsonResponse.results.hotels,
-          isLoaded: true,
-          isError: false
+          hotels: jsonResponse.results.hotels
         });
       });
 
   handleNameFilter = event =>
     this.setState({ hotelNameFilter: event.target.value });
 
-  filterHotelRows = () =>
-    this.state.hotels.filter(hotelObject =>
-      hotelObject.hotelStaticContent.name
-        .toLowerCase()
-        .includes(this.state.hotelNameFilter.toLowerCase())
-    );
-
-  sortRowsByPrice = hotels =>
-    hotels.sort(
-      (a, b) => a.lowestAveragePrice.amount - b.lowestAveragePrice.amount
-    );
-
-  rowDisplayHandler = () => {
-    const filteredRows = this.filterHotelRows();
-
-    if (this.state.ascendingSort) {
-      return this.sortRowsByPrice(filteredRows);
-    }
-
-    return filteredRows;
-  };
-
   handlePriceSort = () => this.setState({ ascendingSort: true });
 
   render() {
-    const { hotelNameFilter } = this.state;
-
-    const filteredHotels = this.rowDisplayHandler();
+    const { hotelNameFilter, hotels, ascendingSort } = this.state;
 
     return (
       <div className="app-container">
         <div className="content">
           <div className="filters">
-            Hotel name
-            <input
-              value={hotelNameFilter}
-              onChange={this.handleNameFilter}
-              type="text"
-            />
-            Price
-            <button onClick={this.handlePriceSort}>sort</button>
+            <div className="filter-element">
+              <SearchInput
+                placeholder="Hotel name"
+                value={hotelNameFilter}
+                onChangeFunction={this.handleNameFilter}
+                labelText="Find hotel by name"
+                id="hotel-search"
+              />
+            </div>
+            <div className="filter-element">
+              <div className="filter-element-content">
+                Price
+                <button type="button" onClick={this.handlePriceSort}>
+                  Lowest to highest
+                </button>
+              </div>
+            </div>
           </div>
-          <HotelsContainer hotels={filteredHotels} />
+          <HotelsContainer
+            hotels={hotels}
+            hotelNameFilter={hotelNameFilter}
+            ascendingSort={ascendingSort}
+          />
         </div>
       </div>
     );
